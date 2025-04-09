@@ -1,6 +1,8 @@
 import smtplib
 import ssl
 from email.message import EmailMessage
+import email_extraction as ee
+import candidate_shortlisting as cs
 
 # Sender and receiver email addresses
 email_sender = 'karthiksamala33@gmail.com'  # Replace with your email address
@@ -53,8 +55,8 @@ def send_email_to_shortlisted_candidates(shortlisted_candidates, job_title, emai
   except Exception as e:
     print(f"Error sending email: {e}")
 
-# for job_title, candidates in shortlisted.items():
-#     if candidates:  # If there are any shortlisted candidates for this job title
-#         send_email_to_shortlisted_candidates(candidates, job_title, email_df, email_sender, email_password)
+for job_title, candidates in cs.shortlisted.items():
+    if candidates:  # If there are any shortlisted candidates for this job title
+        send_email_to_shortlisted_candidates(candidates, job_title, ee.email_df, email_sender, email_password)
 
 
