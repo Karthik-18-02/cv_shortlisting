@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Job Shortlisting Home</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>Job Listings</h1>
+    </header>
+    <main>
+      <ul>
+        {% for job in jobs %}
+        <li>
+          <strong>{{ job['Job Title'] }}</strong>: {{ job['Job Description'] }}
+        </li>
+        {% endfor %}
+      </ul>
+      <div class="actions">
+        <p>
+          <a href="/match_scores">View Match Scores</a> |
+          <a href="/shortlisted">View Shortlisted Candidates</a> |
+          <a href="/emails">View Extracted Emails</a>
+        </p>
+      </div>
+    </main>
+  </body>
+</html>
