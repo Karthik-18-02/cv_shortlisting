@@ -20,6 +20,11 @@
         </li>
         {% endfor %}
       </ul>
+      <h1>Upload Resume</h1>
+      <form action="/" method="POST" enctype="multipart/form-data">
+        <input type="file" name="resume" accept=".pdf" />
+        <button type="submit">Submit</button>
+      </form>
       <div class="actions">
         <p>
           <a href="/match_scores">View Match Scores</a> |
