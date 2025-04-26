@@ -1,16 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Results</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8" />
+    <title>Results - CareerAI</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles/main.css') }}"
+    />
   </head>
   <body>
-    <header>
-      <h1>Results</h1>
-    </header>
-    <main>
-      <div>{{ scores_html|safe }}</div>
-      <a href="/">Back to Home</a>
-    </main>
+    <nav class="glass-nav">
+      <a href="{{ url_for('home') }}" class="logo">
+        <i class="fas fa-robot"></i> CareerAI
+      </a>
+      <div class="nav-links">
+        <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
+        <a href="{{ url_for('jobs') }}"
+          ><i class="fas fa-briefcase"></i> Jobs</a
+        >
+        <a href="{{ url_for('candidates') }}"
+          ><i class="fas fa-users"></i> Candidates</a
+        >
+      </div>
+    </nav>
+
+    <section class="results-section">
+      <div class="results-header">
+        <h2><i class="fas fa-poll-h"></i> Your Match Results</h2>
+        <div class="legend">
+          <span class="legend-item shortlisted"
+            ><i class="fas fa-check"></i> Shortlisted</span
+          >
+          <span class="legend-item not-selected"
+            ><i class="fas fa-times"></i> Not Selected</span
+          >
+        </div>
+      </div>
+
+      <div class="results-grid">
+        {% for job in results %}
+        <div
+          class="result-card {{ 'shortlisted' if job.shortlisted else 'not-selected' }}"
+        >
+          <div class="job-header">
+            <h3>{{ job.title }}</h3>
+            <span class="match-score"
+              >{{ (job.score * 100)|round }}% Match</span
+            >
+          </div>
+          <div class="progress-container">
+            <div
+              class="progress-bar"
+              data-width="{{ (job.score * 100)|round }}"
+            ></div>
+          </div>
+          <div class="status-indicator">
+            {% if job.shortlisted %}
+            <i class="fas fa-check-circle"></i> Shortlisted {% else %}
+            <i class="fas fa-times-circle"></i> Not Selected {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+      <p>&copy; 2025 CareerAI. All Rights Reserved.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='scripts/script.js') }}"></script>
+    <script>
+      document.querySelectorAll(".progress-bar").forEach((bar) => {
+        const width = bar.getAttribute("data-width");
+        bar.style.width = `${width}%`;
+      });
+    </script>
   </body>
 </html>

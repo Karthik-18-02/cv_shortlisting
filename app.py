@@ -1,95 +1,67 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
+from config import Config
+from utils.resume_processor import extract_text_from_pdf, extract_candidate_info, process_job_descriptions
+from utils.bert_matcher import BERTMatcher
+from utils.email_sender import send_email
 import os
-import pandas as pd
-import json
+import re
 
 app = Flask(__name__)
+app.config.from_object(Config)
 
-# Load pre-saved outputs from your notebook
-DATA_FOLDER = os.path.join(app.root_path, "data")
+# Ensure upload folder exists
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-# Load job descriptions (if needed) – for example, to list available jobs
-job_description_csv = os.path.join(DATA_FOLDER, "job_description.csv")
-job_df = pd.read_csv(job_description_csv, encoding='ISO-8859-1')
+# Initialize BERT Matcher and load jobs
+bert_matcher = BERTMatcher(Config.BERT_MODEL_NAME)
+job_descriptions = process_job_descriptions(Config.JOB_DESCRIPTIONS_PATH)
 
-# Load match scores DataFrame
-match_scores_csv = os.path.join(DATA_FOLDER, "match_scores.csv")
-if os.path.exists(match_scores_csv):
-    match_scores_df = pd.read_csv(match_scores_csv, index_col=0)
-else:
-    match_scores_df = None
+@app.route('/')
+def home():
+    return render_template('index.html', upload_exists=True)
 
-# Load shortlisted candidates JSON
-shortlisted_json = os.path.join(DATA_FOLDER, "shortlisted_candidates.json")
-if os.path.exists(shortlisted_json):
-    with open(shortlisted_json, "r") as f:
-        shortlisted_candidates = json.load(f)
-else:
-    shortlisted_candidates = {}
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method == 'POST':
+        if 'resume' not in request.files:
+            return redirect(request.url)
+        file = request.files['resume']
+        if file.filename == '':
+            return redirect(request.url)
+        # Validate extension
+        if file and file.filename.lower().endswith(tuple(Config.ALLOWED_EXTENSIONS)):
+            save_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(save_path)
+            # Extract and process resume
+            resume_text = extract_text_from_pdf(save_path)
+            candidate_info = extract_candidate_info(resume_text)
+            # Compute match scores
+            results = []
+            for job in job_descriptions:
+                score = bert_matcher.calculate_match_score(job['Cleaned Description'], candidate_info)
+                shortlisted = score >= Config.THRESHOLD
+                results.append({'title': job['Job Title'], 'score': round(score, 4), 'shortlisted': shortlisted})
+            # Send emails to shortlisted candidates
+            if any(r['shortlisted'] for r in results):
+                email_match = re.search(r'[\w\.-]+@[\w\.-]+', resume_text)
+                if email_match:
+                    candidate_email = email_match.group(0)
+                    for r in results:
+                        if r['shortlisted']:
+                            send_email(candidate_email, r['title'], Config)
+            return render_template('results.html', results=results)
+        return redirect(url_for('home'))
+    return render_template('upload.html')
 
-# Load email data DataFrame
-email_data_csv = os.path.join(DATA_FOLDER, "email_data.csv")
-if os.path.exists(email_data_csv):
-    email_df = pd.read_csv(email_data_csv)
-else:
-    email_df = pd.DataFrame()
+@app.route('/jobs')
+def jobs():
+    return render_template('jobs.html', jobs=job_descriptions)
 
-# Home page: List job descriptions (use your job_df or final job summaries)
-@app.route("/")
-def index():
-    # For simplicity, display job titles and summaries from job_df (assuming your notebook produced them)
-    # Modify this as needed if your notebook output is different.
-    jobs = job_df[['Job Title', 'Job Description']].to_dict(orient="records")
-    return render_template("index.html", jobs=jobs)
+@app.route('/candidates')
+def candidates():
+    # TODO: replace with real persistence
+    placeholder = []
+    return render_template('candidates.html', candidates=placeholder)
 
-# Route to display match scores as an HTML table
-@app.route("/match_scores")
-def show_match_scores():
-    if match_scores_df is not None:
-        scores_html = match_scores_df.to_html(classes="table table-striped")
-        return render_template("results.html", scores_html=scores_html)
-    else:
-        return "Match scores not available. Please run your notebook to generate them."
-
-# Route to display shortlisted candidates for each job title
-# @app.route("/shortlisted")
-# def show_shortlisted():
-#     if shortlisted_candidates:
-#         return render_template("shortlisted.html", shortlisted=shortlisted_candidates)
-#     else:
-#         return "Shortlisted candidate data not available. Please run your notebook to generate it."
-    
-# Route to display shortlisted candidates for each job title
-@app.route("/shortlisted", methods=["GET", "POST"])
-def show_shortlisted():
-    search_query = request.args.get('search', '').lower()
-
-    if shortlisted_candidates:
-        shortlisted_filtered = {}
-        
-        # Filter candidates by the search query for each job
-        for job_title, candidates in shortlisted_candidates.items():
-            filtered_candidates = [candidate for candidate in candidates if search_query in candidate.lower()]
-            
-            # Add job title to dictionary only if there are matching candidates
-            if filtered_candidates:
-                shortlisted_filtered[job_title] = filtered_candidates
-            else:
-                shortlisted_filtered[job_title] = []
-
-        return render_template("shortlisted.html", shortlisted=shortlisted_filtered, search_query=search_query)
-    else:
-        return "Shortlisted candidate data not available. Please run your notebook to generate it."
-
-
-# Route to display extracted emails (optional)
-@app.route("/emails")
-def show_emails():
-    if not email_df.empty:
-        emails_html = email_df.to_html(classes="table table-striped", index=False)
-        return render_template("results.html", scores_html=emails_html)
-    else:
-        return "Email data not available. Please run your notebook to generate it."
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

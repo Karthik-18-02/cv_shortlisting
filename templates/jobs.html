@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Openings - CareerAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="glass-nav">
+        <a href="{{ url_for('home') }}" class="logo">
+            <i class="fas fa-robot"></i> CareerAI
+        </a>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
+            <a href="{{ url_for('jobs') }}"><i class="fas fa-briefcase"></i> Jobs</a>
+            <a href="{{ url_for('candidates') }}"><i class="fas fa-users"></i> Candidates</a>
+        </div>
+    </nav>
+
+    <!-- Job Listings Section -->
+    <section class="jobs-section">
+        <h1><i class="fas fa-search"></i> Current Job Openings</h1>
+        
+        <div class="job-filters">
+            <input type="text" placeholder="Search jobs..." class="search-input">
+            <select class="filter-select">
+                <option>All Categories</option>
+                <option>Engineering</option>
+                <option>Design</option>
+                <option>Management</option>
+            </select>
+        </div>
+
+        <div class="job-listings">
+            {% for job in jobs %}
+            <div class="job-card">
+                <div class="job-header">
+                    <h3>{{ job['Job Title'] }}</h3>
+                    <span class="job-salary">$120k - $150k</span>
+                </div>
+                <div class="job-details">
+                    <p><i class="fas fa-building"></i> {{ job['Company'] }}</p>
+                    <p><i class="fas fa-map-marker-alt"></i> {{ job['Location'] }}</p>
+                </div>
+                <div class="job-description">
+                    {{ job['Cleaned Description']|truncate(200) }}
+                </div>
+                <div class="job-footer">
+                    <span class="job-tag">{{ job['Category'] }}</span>
+                    <button class="apply-button">View Details</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2025 CareerAI. All Rights Reserved.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='scripts/script.js') }}"></script>
+</body>
+</html>

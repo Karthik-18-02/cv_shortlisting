@@ -1,0 +1,566 @@
+/* static/styles/main.css */
+/* Root variables for themes */
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #333;
+  --bg-light: #f4f4f4;
+  --bg-dark: #1e1e1e;
+  --text-light: #fff;
+  --text-dark: #333;
+  --transition-speed: 0.3s;
+}
+
+[data-theme="light"] {
+  --bg-color: var(--bg-light);
+  --text-color: var(--text-dark);
+}
+
+[data-theme="dark"] {
+  --bg-color: var(--bg-dark);
+  --text-color: var(--text-light);
+}
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure the body takes the full height of the viewport */
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+  line-height: 1.6;
+}
+
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color var(--transition-speed);
+}
+
+a:hover {
+  color: darken(var(--primary-color), 10%);
+}
+
+/* Navigation */
+nav.glass-nav {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  z-index: 1000;
+}
+
+nav .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+nav .nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+nav .nav-links a {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  transition: background var(--transition-speed);
+}
+
+nav .nav-links a:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile Nav */
+.nav-open {
+  display: block !important;
+}
+
+#mobile-toggle {
+  display: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  nav .nav-links {
+    display: none;
+    flex-direction: column;
+    background: var(--bg-color);
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 200px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  #mobile-toggle {
+    display: block;
+  }
+}
+
+/* Hero Section */
+.hero {
+  height: 80vh;
+  position: relative;
+  background: url("/static/images/hero-bg-2.jpg") no-repeat center/cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 5rem;
+  overflow: hidden; /* Ensures the overlay stays within bounds */
+}
+
+/* Apply overlay only to the image */
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* Adjust opacity here (0 to 1) */
+  z-index: 1; /* Ensures overlay is behind the content */
+}
+
+.hero > * {
+  position: relative; /* Ensures the text/content is above the overlay */
+  z-index: 2;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #276ee1; /* White color for contrast */
+  background: linear-gradient(
+    to right,
+    #ff7e5f,
+    #feb47b
+  ); /* Gradient from pink to orange */
+  -webkit-background-clip: text; /* Clips the gradient to the text */
+  background-clip: text; /* Makes the gradient visible on the text */
+  font-weight: bold; /* Makes the text bold */
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.7),
+    0 0 20px rgba(255, 255, 255, 0.7), 0 0 30px rgba(255, 255, 255, 0.7); /* Glowing effect */
+}
+
+.hero p {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  color: #cccce1;
+  /* Light gray color for contrast */
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.5),
+    0 0 10px rgba(255, 255, 255, 0.5); /* Glowing effect */
+}
+
+.cta-button {
+  display: inline-block;
+  background: var(--primary-color);
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  font-size: 1rem;
+  transition: background var(--transition-speed);
+}
+
+.cta-button:hover {
+  background: #ff5733; /* Solid color for hover effect */
+  transform: scale(1.05); /* Slightly enlarge the button when hovered */
+}
+
+.cta-button:active {
+  transform: scale(
+    0.95
+  ); /* Shrink the button slightly to create a "press" effect */
+  background: #e04e3b; /* Darker background when clicked */
+}
+
+/* Upload Section */
+.upload-section {
+  display: flex;
+  justify-content: center; /* Centers the content horizontally */
+  align-items: center; /* Centers the content vertically */
+  height: 100vh; /* Full viewport height */
+  background-color: var(--bg-light);
+  text-align: center;
+}
+
+/* Container for Upload Form */
+.upload-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 3rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.upload-container h2 {
+  font-size: 2rem;
+  color: #9b59b6; /* Royal Purple */
+  margin-bottom: 2rem;
+}
+
+/* Styling for the blue-dotted container */
+.upload-box {
+  background-color: #f4f4f4;
+  padding: 2rem;
+  border-radius: 10px;
+  border: 2px dashed var(--primary-color);
+  margin-bottom: 2rem;
+  cursor: pointer; /* Change the cursor to a pointer when hovering */
+  text-align: center;
+  position: relative;
+}
+
+.upload-box i {
+  font-size: 2rem;
+  color: var(--primary-color);
+}
+
+.upload-box p {
+  font-size: 1rem;
+  color: var(--secondary-color);
+}
+
+.upload-box:hover {
+  background-color: #e0f7fa; /* Light background color on hover for better feedback */
+}
+
+/* Hide the default file input button */
+.upload-box input[type="file"] {
+  display: none; /* Hides the file input button */
+}
+
+/* Hover effect */
+.upload-box i {
+  font-size: 2rem;
+  color: var(--primary-color);
+}
+
+.upload-box p {
+  font-size: 1rem;
+  color: var(--secondary-color);
+}
+
+.upload-box:hover p {
+  color: var(--primary-color); /* Change text color on hover */
+}
+
+/* Show a pointer cursor when hovering */
+.upload-box:hover {
+  cursor: pointer;
+}
+
+.upload-progress {
+  margin-top: 1rem;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+}
+
+.progress-bar {
+  height: 10px;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+}
+
+#progress-text {
+  margin-top: 0.5rem;
+  color: var(--primary-color);
+  font-size: 1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .upload-container {
+    padding: 2rem;
+  }
+}
+
+/* Common Styling for Jobs Section */
+
+/* Job Listings Section */
+.jobs-section {
+  padding: 4rem 2rem;
+  background-color: var(--bg-light);
+  text-align: center;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 2rem 0; /* Space between sections */
+}
+
+.jobs-section h1 {
+  font-size: 3rem;
+  color: #9b59b6;
+  margin-bottom: 2rem;
+  /* background-color: #000000; */
+}
+
+/* Job Filters (Search Bar & Category) */
+.job-filters {
+  margin-bottom: 2rem;
+}
+
+.search-input {
+  padding: 10px;
+  font-size: 1rem;
+  width: 250px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+}
+
+.filter-select {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* Job Cards */
+.job-listings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.job-card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  border: 2px solid rgb(128, 0, 87);
+}
+
+.job-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.job-header h3 {
+  font-size: 1.5rem;
+  color: rgb(111, 42, 58);
+  margin-bottom: 1rem;
+}
+
+.job-header .job-salary {
+  font-size: 1.1rem;
+  color: var(--secondary-color);
+}
+
+.job-details p {
+  font-size: 1rem;
+  color: var(--secondary-color);
+}
+
+.job-description {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+}
+
+.job-footer {
+  margin-top: 1rem;
+}
+
+.job-footer .job-tag {
+  font-size: 1rem;
+  background-color: #e0f7fa;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: var(--primary-color);
+}
+
+.job-footer .apply-button {
+  padding: 0.75rem 1.5rem;
+  background: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.job-footer .apply-button:hover {
+  background: #ff5733;
+}
+
+/* Metrics Section */
+.metrics {
+  display: flex;
+  justify-content: space-around;
+  padding: 3rem 2rem;
+  background: var(--bg-light);
+}
+
+.metric {
+  text-align: center;
+}
+
+.metric-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.metric-label {
+  font-size: 1rem;
+}
+
+/* Reveal Animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity var(--transition-speed), transform var(--transition-speed);
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Section Spacing */
+section {
+  padding: 4rem 2rem;
+}
+
+/* About & Domains Grid */
+.about,
+.domains {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.domains-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.domain-card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform var(--transition-speed),
+    box-shadow var(--transition-speed);
+}
+
+.domain-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.domain-card i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+}
+
+/* Ensure that the footer stays at the bottom of the page */
+footer {
+  background-color: #000;
+  color: var(--text-light);
+  text-align: center;
+  padding: 2rem;
+  margin-top: auto; /* This ensures that the footer sticks to the bottom of the page */
+  /* border-top: 2px solid #000000; Optional: border on top of the footer */
+}
+
+/* Footer text styling */
+footer p {
+  font-size: 1rem;
+}
+
+/* Footer link (if any) styling */
+footer a {
+  color: #fff;
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: #f4f4f4;
+}
+
+/* Utility */
+.text-center {
+  text-align: center;
+}
+
+.features {
+  display: flex;
+  justify-content: space-between;
+  gap: 3rem;
+  padding: 4rem 3rem;
+  background-color: var(--bg-light);
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  flex-wrap: wrap;
+  width: 100%; /* Ensures the container takes up the entire available width */
+  max-width: 100%; /* Maximum width set to 100% for fluid resizing */
+}
+
+.feature-card {
+  background-color: #fff;
+  padding: 3rem;
+  text-align: center;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  flex: 1;
+  min-width: 400px; /* Increased minimum width for larger cards */
+  max-width: 500px; /* Increased max-width for even larger containers */
+  overflow: hidden;
+}
+
+.feature-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.feature-card i {
+  font-size: 3rem; /* Larger icons for better visibility */
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.feature-card h3 {
+  font-size: 1.8rem; /* Increased font size */
+  margin-bottom: 1rem;
+}
+
+.feature-card p {
+  font-size: 1.1rem; /* Slightly larger text for readability */
+  color: var(--secondary-color);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .features {
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem;
+    width: 100%; /* Ensure it takes the full width on smaller screens */
+  }
+
+  .feature-card {
+    min-width: 280px; /* Adjusted for smaller screens */
+    max-width: 90%;
+  }
+}

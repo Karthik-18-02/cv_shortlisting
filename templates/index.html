@@ -1,37 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>Job Shortlisting Home</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Career Matcher</title>
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
+      href="{{ url_for('static', filename='styles/main.css') }}"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <script src="{{ url_for('static', filename='scripts/script.js') }}"></script>
   </head>
   <body>
-    <header>
-      <h1>Job Listings</h1>
-    </header>
-    <main>
-      <ul>
-        {% for job in jobs %}
-        <li>
-          <strong>{{ job['Job Title'] }}</strong>: {{ job['Job Description'] }}
-        </li>
-        {% endfor %}
-      </ul>
-      <h1>Upload Resume</h1>
-      <form action="/" method="POST" enctype="multipart/form-data">
-        <input type="file" name="resume" accept=".pdf" />
-        <button type="submit">Submit</button>
-      </form>
-      <div class="actions">
-        <p>
-          <a href="/match_scores">View Match Scores</a> |
-          <a href="/shortlisted">View Shortlisted Candidates</a> |
-          <a href="/emails">View Extracted Emails</a>
-        </p>
+    <!-- Navbar -->
+    <nav class="glass-nav">
+      <a href="{{ url_for('home') }}" class="logo">
+        <i class="fas fa-robot"></i> CareerAI
+      </a>
+      <div class="nav-links">
+        <a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
+        <a href="{{ url_for('jobs') }}"
+          ><i class="fas fa-briefcase"></i> Jobs</a
+        >
+        <a href="{{ url_for('candidates') }}"
+          ><i class="fas fa-users"></i> Candidates</a
+        >
       </div>
-    </main>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Smart Career Matching</h1>
+        <p>AI-powered job matching with BERT transformer technology</p>
+        <a
+          href="{{ url_for('upload') if upload_exists else '#' }}"
+          class="cta-button"
+        >
+          <i class="fas fa-magic"></i> Upload Resume
+        </a>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="feature-card">
+        <i class="fas fa-brain"></i>
+        <h3>AI Analysis</h3>
+        <p>Advanced NLP algorithms analyze your resume content</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-bolt"></i>
+        <h3>Instant Matching</h3>
+        <p>Real-time job matching with top companies</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-envelope"></i>
+        <h3>Direct Alerts</h3>
+        <p>Immediate notifications for shortlisted positions</p>
+      </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+      <p>&copy; 2025 CareerAI. All Rights Reserved.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='scripts/script.js') }}"></script>
   </body>
 </html>
