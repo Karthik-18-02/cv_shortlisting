@@ -1,10 +1,9 @@
+# app.py
 from flask import Flask, render_template, request, redirect, url_for
 from config import Config
 from utils.resume_processor import extract_text_from_pdf, extract_candidate_info, process_job_descriptions
 from utils.bert_matcher import BERTMatcher
-from utils.email_sender import send_email
 import os
-import re
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -12,9 +11,12 @@ app.config.from_object(Config)
 # Ensure upload folder exists
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-# Initialize BERT Matcher and load jobs
+# Initialize BERT Matcher and load job descriptions
 bert_matcher = BERTMatcher(Config.BERT_MODEL_NAME)
 job_descriptions = process_job_descriptions(Config.JOB_DESCRIPTIONS_PATH)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 @app.route('/')
 def home():
@@ -28,30 +30,65 @@ def upload():
         file = request.files['resume']
         if file.filename == '':
             return redirect(request.url)
+        
         # Validate extension
         if file and file.filename.lower().endswith(tuple(Config.ALLOWED_EXTENSIONS)):
             save_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(save_path)
+
             # Extract and process resume
             resume_text = extract_text_from_pdf(save_path)
             candidate_info = extract_candidate_info(resume_text)
-            # Compute match scores
+
+            # Compute match scores for job descriptions
             results = []
             for job in job_descriptions:
                 score = bert_matcher.calculate_match_score(job['Cleaned Description'], candidate_info)
-                shortlisted = score >= Config.THRESHOLD
-                results.append({'title': job['Job Title'], 'score': round(score, 4), 'shortlisted': shortlisted})
-            # Send emails to shortlisted candidates
-            if any(r['shortlisted'] for r in results):
-                email_match = re.search(r'[\w\.-]+@[\w\.-]+', resume_text)
-                if email_match:
-                    candidate_email = email_match.group(0)
-                    for r in results:
-                        if r['shortlisted']:
-                            send_email(candidate_email, r['title'], Config)
+                shortlisted = score >= Config.THRESHOLD  # Check if score meets threshold
+                if shortlisted:
+                    results.append({'title': job['Job Title'], 'score': round(score, 4), 'shortlisted': shortlisted})
+
+            # Redirect to the results page with dynamic data
             return render_template('results.html', results=results)
-        return redirect(url_for('home'))
-    return render_template('upload.html')
+
+        return redirect(url_for('home'))  # Redirect back to home if file is invalid
+    
+    return render_template('upload.html')  # Render the upload page when visited normally
+
+@app.route('/show_results', methods=['GET', 'POST'])
+def show_results():
+    # Fetch all PDFs in the upload folder
+    uploaded_files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if allowed_file(f)]
+    
+    all_results = []
+    
+    # Process each file in the upload folder
+    for file_name in uploaded_files:
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+        
+        # Extract text from each PDF
+        resume_text = extract_text_from_pdf(file_path)
+        candidate_info = extract_candidate_info(resume_text)
+        
+        # Calculate match scores for job descriptions
+        results = []
+        for job in job_descriptions:
+            score = bert_matcher.calculate_match_score(job['Cleaned Description'], candidate_info)
+            shortlisted = score >= Config.THRESHOLD  # Check if score meets threshold
+            if shortlisted:
+                results.append({'title': job['Job Title'], 'score': round(score, 4), 'shortlisted': shortlisted})
+        
+        # Add the results for this resume (file)
+        all_results.append({'file': file_name, 'results': results})
+
+    # Search functionality
+    search_query = request.form.get('search', '').lower()  # Get search query from form
+    if search_query:
+        # Filter results based on the search query (case-insensitive)
+        all_results = [data for data in all_results if search_query in data['file'].lower()]
+
+    # Render the results page with the filtered results
+    return render_template('results.html', results_data=all_results)
 
 @app.route('/jobs')
 def jobs():
@@ -59,7 +96,7 @@ def jobs():
 
 @app.route('/candidates')
 def candidates():
-    # TODO: replace with real persistence
+    # Placeholder for candidate listing
     placeholder = []
     return render_template('candidates.html', candidates=placeholder)
 

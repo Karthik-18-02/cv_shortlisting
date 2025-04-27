@@ -18,7 +18,10 @@ Hiring Team"""
     
     msg.set_content(body)
     
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(config.EMAIL_HOST, config.EMAIL_PORT, context=context) as server:
-        server.login(config.EMAIL_SENDER, config.EMAIL_PASSWORD)
-        server.send_message(msg)
+    try:
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(config.EMAIL_HOST, config.EMAIL_PORT, context=context) as server:
+            server.login(config.EMAIL_SENDER, config.EMAIL_PASSWORD)
+            server.send_message(msg)
+    except Exception as e:
+        print(f"Error sending email: {e}")

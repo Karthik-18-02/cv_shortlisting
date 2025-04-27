@@ -47,11 +47,8 @@
               required
               style="display: none"
             />
-            <!-- Hide the input field -->
-
-            <!-- <i class="fa-solid fa-cloud-arrow-up"></i> -->
             <p>Drag & drop your resume here or click to browse</p>
-            <p>Only .pdf foramts are acceptable</p>
+            <p>Only .pdf formats are acceptable</p>
           </div>
           <div class="upload-progress">
             <div class="progress-bar" id="progress-bar"></div>
@@ -62,6 +59,14 @@
             <i class="fas fa-magic"></i> Analyze Resume
           </button>
         </form>
+
+        <!-- Show Results Button -->
+        <a
+          href="{{ url_for('show_results') }}"
+          class="cta-button show-results-btn"
+        >
+          <i class="fas fa-search"></i> Show Results
+        </a>
       </div>
     </section>
 
