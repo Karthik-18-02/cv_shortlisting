@@ -1,1 +1,1 @@
-web: python app.py
+web: python install_spacy_model.py && python app.py
