@@ -6,4 +6,4 @@ pandas
 PyMuPDF
 spacy
 python-dotenv
-python-email-validator
+email-validator
