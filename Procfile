@@ -1,1 +1,1 @@
-web: python -m spacy download en_core_web_sm && python app.py
+web: python install_spacy_model.py && python app.py
