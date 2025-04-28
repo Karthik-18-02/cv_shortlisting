@@ -7,4 +7,3 @@ PyMuPDF
 spacy
 python-dotenv
 email-validator
-en-core-web-sm
