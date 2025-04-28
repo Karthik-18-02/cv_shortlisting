@@ -1,1 +1,1 @@
-web: python install_spacy_model.py && python app.py
+web: postinstall.bat && python app.py
