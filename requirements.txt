@@ -5,5 +5,6 @@ scikit-learn
 pandas
 PyMuPDF
 spacy
+en-core-web-sm
 python-dotenv
 email-validator
